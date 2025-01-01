@@ -24,18 +24,26 @@ use HasFactory;
 
     // --------------------------------------This i can use for product -------------------------------------------------
     // tinker ----------------------------------- \App\Models\Book::popular('2023-01-01','2023-03-30')->get();
-
-    public function scopePopular(Builder $query, $from = null , $to = null): Builder | QueryBuilder{
+    public function scopeWithReviewsCount(Builder $query, $from = null , $to = null): Builder| QueryBuilder
+    {
         return $query->withCount([
             'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
-        ])
+        ]);
+    }
+    public function scopeWithAvgRating(Builder $query, $from = null , $to = null): Builder| QueryBuilder
+    {
+        return $query->withAvg([
+            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
+        ],'rating');
+    }
+
+    public function scopePopular(Builder $query, $from = null , $to = null): Builder | QueryBuilder{
+        return $query->WithReviewsCount()
         ->orderBy('reviews_count','desc');
     }
 
     public function scopehigestRated(Builder $query,$from = null,$to = null): Builder | QueryBuilder{
-        return $query->withAvg([
-            'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
-        ],'rating')->orderBy('reviews_avg_rating','desc');
+        return $query->WithAvgRating()->orderBy('reviews_avg_rating','desc');
     }
 
 
@@ -85,5 +93,10 @@ use HasFactory;
         ->popular(now()->subMonth(6),now())
 
                         ->MinRevews(5);
+    }
+
+    protected static function booted(){
+        static::updated(fn(Book $book)=> cache()->forget('book:' . $book-> id));
+        static::deleted(fn(Book $book)=> cache()->forget('book:' . $book-> id));
     }
 }
