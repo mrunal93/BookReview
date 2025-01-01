@@ -14,13 +14,22 @@ class BookController extends Controller
     public function index( Request $request)
     {
         $title = $request->input("title");
-
+        $filter = $request->input("filter", '');
         $books = Book::when(
             $title,
             fn($query,$title) => $query->title($title)
-            )
-            ->get();
+            );
 
+            // Match is the type of stament just like switch
+            $books = match ($filter) {
+                'popular_last_month' => $books->popularLastMonth(),
+                'popular_last_6month' => $books->Popular6LastMonth(),
+                'highest_rated_last_month' => $books->HigestRatedLastMonth(),
+                'highest_rated_last_6month' => $books->HigestRated6LastMonth(),
+                default => $books->latest()
+            };
+
+            $books = $books->get();
         return view("books.index",['books'=> $books]);
     }
 

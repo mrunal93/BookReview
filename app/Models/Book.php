@@ -58,4 +58,32 @@ use HasFactory;
         }
 
     }
+
+    public function scopePopularLastMonth(Builder $query): Builder | QueryBuilder {
+
+        return $query ->popular(now()->subMonth(),now())
+                        ->higestRated(now()->subMonth(),now())
+                ->MinRevews(1);
+    }
+    public function scopePopular6LastMonth(Builder $query): Builder | QueryBuilder {
+
+        return $query ->popular(now()->subMonth(6),now())
+                        ->higestRated(now()->subMonth(6),now())
+                        ->MinRevews(5);
+    }
+
+    public function scopeHigestRatedLastMonth(Builder $query): Builder | QueryBuilder {
+
+        return $query ->higestRated(now()->subMonth(),now())
+        ->popular(now()->subMonth(),now())
+
+                        ->MinRevews(1);
+    }
+    public function scopeHigestRated6LastMonth(Builder $query): Builder | QueryBuilder {
+
+        return $query ->higestRated(now()->subMonth(6),now())
+        ->popular(now()->subMonth(6),now())
+
+                        ->MinRevews(5);
+    }
 }
