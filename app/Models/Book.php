@@ -35,7 +35,7 @@ use HasFactory;
     public function scopehigestRated(Builder $query,$from = null,$to = null): Builder | QueryBuilder{
         return $query->withAvg([
             'reviews' => fn(Builder $q) => $this->dateRangeFilter($q, $from, $to)
-        ],'rating') ->orderBy('reviews_avg_rating','desc');
+        ],'rating')->orderBy('reviews_avg_rating','desc');
     }
 
 
