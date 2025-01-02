@@ -36,7 +36,12 @@ class BookController extends Controller
 
           //  cache()->remember($cacheKey,3600,function() use($books){
 
-                  $books-> get();
+          cache()->remember(
+            $cacheKey,
+            3600,
+            fn() =>
+            $books->get()
+        );
 
 
 
